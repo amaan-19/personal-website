@@ -1,0 +1,123 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allBlogPosts = await getCollection('blog', ({ data }) => {
+  return data.draft !== true;
+});
+
+const sortedPosts = allBlogPosts.sort((a, b) =>
+  b.data.date.getTime() - a.data.date.getTime()
+);
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+---
+
+<BaseLayout pageTitle="Blog">
+  <section id="blog">
+    <p class="lead">
+      Thoughts on papers I've been reading.
+    </p>
+
+    <div class="blog-list">
+      {sortedPosts.length > 0 ? (
+        sortedPosts.map(post => (
+          <article class="blog-post-preview">
+            <time class="post-date" datetime={post.data.date.toISOString()}>
+              {formatDate(post.data.date)}
+            </time>
+            <h3 class="post-title">
+              <a href={`/blog/${post.slug}`} class="post-link">
+                {post.data.title}
+              </a>
+            </h3>
+            <p class="post-excerpt">
+              {post.data.description}
+            </p>
+            <a href={`/blog/${post.slug}`} class="read-more">
+              Read more →
+            </a>
+          </article>
+        ))
+      ) : (
+        <article class="blog-post-preview">
+          <time class="post-date">Coming Soon</time>
+          <h3 class="post-title">First post coming soon</h3>
+          <p class="post-excerpt">
+            Stay tuned.
+          </p>
+        </article>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-list {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .blog-post-preview {
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .blog-post-preview:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .post-date {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-title {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  .post-link {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .post-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .post-excerpt {
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+  }
+
+  .read-more {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.75rem;
+  }
+
+  .read-more:hover {
+    text-decoration: underline;
+  }
+</style>
