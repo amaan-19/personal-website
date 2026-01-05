@@ -30,6 +30,22 @@ const currentPath = Astro.url.pathname;
         <a href="/" class={`nav-link ${currentPath === '/' ? 'active' : ''}`}>Home</a>
         <a href="/blog" class={`nav-link ${currentPath.startsWith('/blog') ? 'active' : ''}`}>Blog</a>
       </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
     </div>
   </nav>
 
@@ -73,7 +89,34 @@ const currentPath = Astro.url.pathname;
     </main>
   </div>
 
+  <script is:inline>
+    // Dark mode functionality - must run before page renders
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
   <script>
+    // Dark mode toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    function setTheme(theme: string) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+      });
+    }
+
     // Smooth scroll for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', (e) => {
@@ -137,16 +180,32 @@ const currentPath = Astro.url.pathname;
   }
 
   :root {
+    /* Light mode colors */
     --color-bg: #ffffff;
     --color-text: #1a1a1a;
     --color-text-muted: #6b7280;
     --color-border: #e5e7eb;
     --color-accent: #636B2F;
-    --color-accent-hover: #636B2F;
+    --color-accent-hover: #7a8539;
     --color-surface: #f9fafb;
+    --color-sidebar: #F2F0EF;
+    --color-nav-bg: rgba(255, 255, 255, 0.95);
     --font: 'Space Mono', monospace;
     --nav-height: 70px;
     --sidebar-width: 320px;
+  }
+
+  [data-theme="dark"] {
+    /* Dark mode colors */
+    --color-bg: #0f0f0f;
+    --color-text: #e5e5e5;
+    --color-text-muted: #a1a1a1;
+    --color-border: #2a2a2a;
+    --color-accent: #8a9a4a;
+    --color-accent-hover: #9fb058;
+    --color-surface: #1a1a1a;
+    --color-sidebar: #161616;
+    --color-nav-bg: rgba(15, 15, 15, 0.95);
   }
 
   html {
@@ -170,7 +229,7 @@ const currentPath = Astro.url.pathname;
     left: var(--sidebar-width);
     right: 0;
     height: var(--nav-height);
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--color-nav-bg);
     backdrop-filter: blur(10px);
     z-index: 100;
   }
@@ -181,7 +240,7 @@ const currentPath = Astro.url.pathname;
     padding: 0 2rem;
     padding-left: 2rem;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
   }
 
@@ -222,6 +281,37 @@ const currentPath = Astro.url.pathname;
     background: var(--color-accent);
   }
 
+  .theme-toggle {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+    border-radius: 0.25rem;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-accent);
+  }
+
+  .sun-icon,
+  .moon-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  [data-theme="light"] .moon-icon {
+    display: none;
+  }
+
+  [data-theme="dark"] .sun-icon {
+    display: none;
+  }
+
   /* Layout */
   .layout {
     height: 100vh;
@@ -235,10 +325,9 @@ const currentPath = Astro.url.pathname;
     top: 0; /* Starts at very top */
     width: var(--sidebar-width);
     height: 100vh; /* Full height */
-    background: var(--color-surface);
+    background: var(--color-sidebar);
     overflow-y: auto;
     z-index: 50; /* Behind nav */
-    background-color: #F2F0EF;
   }
 
   .sidebar-content {
@@ -308,7 +397,7 @@ const currentPath = Astro.url.pathname;
     align-items: center;
     justify-content: center;
     color: var(--color-text-muted);
-    background: white;
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 50%;
     text-decoration: none;
