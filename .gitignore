@@ -23,3 +23,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .vs_code/s
+
+# blog docs
+BLOG_GUIDE.md
+_template.md
