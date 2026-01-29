@@ -275,16 +275,16 @@ const currentPath = Astro.url.pathname;
   .sidebar {
     position: fixed;
     left: 0;
-    top: 0; /* Starts at very top */
+    top: 0;
     width: var(--sidebar-width);
-    height: 100vh; /* Full height */
+    height: 100vh; 
     background: var(--color-sidebar);
     overflow-y: auto;
-    z-index: 50; /* Behind nav */
+    z-index: 50;
   }
 
   .sidebar-content {
-    padding-top: var(--nav-height); /* Add padding for nav */
+    padding-top: var(--nav-height);
     padding-left: 2rem;
     padding-right: 2rem;
     padding-bottom: 3rem;
@@ -398,7 +398,7 @@ const currentPath = Astro.url.pathname;
   .main-content {
     margin-left: var(--sidebar-width);
     margin-top: var(--nav-height);
-    padding-left: 2rem;  /* Match nav-container padding-left */
+    padding-left: 2rem; 
     padding-right: 3rem;
     padding-top: 3rem;
     padding-bottom: 3rem;
