@@ -556,6 +556,8 @@ const currentPath = Astro.url.pathname;
 
     .layout {
       grid-template-columns: 1fr;
+      height: auto;
+      overflow: visible;
     }
 
     .sidebar {
@@ -581,7 +583,9 @@ const currentPath = Astro.url.pathname;
 
     .main-content {
       margin-left: 0;
-      margin-top: var(--nav-height);
+      margin-top: 0; /* Changed from var(--nav-height) */
+      height: auto; /* Changed from calc(100vh - var(--nav-height)) */
+      min-height: calc(100vh - var(--nav-height));
       padding: 2rem 1.5rem;
     }
 
